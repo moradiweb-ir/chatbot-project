@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Send, Moon, Sun } from "lucide-react"
-import { io, type Socket } from "socket.io-client"
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Send, Moon, Sun } from "lucide-react";
+import { io, type Socket } from "socket.io-client";
 
 interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
-  timestamp: Date
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  timestamp: Date;
 }
 
 export default function MentalHealthChat() {
@@ -19,78 +19,79 @@ export default function MentalHealthChat() {
     {
       id: "1",
       role: "assistant",
-      content: "Hello. I'm here to listen. How are you feeling today?",
+      text: "Hello. I'm here to listen. How are you feeling today?",
       timestamp: new Date(),
     },
-  ])
-  const [input, setInput] = useState("")
-  const [isConnected, setIsConnected] = useState(false)
-  const [isDark, setIsDark] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const socketRef = useRef<Socket | null>(null)
+  ]);
+  const [input, setInput] = useState("");
+  const [isConnected, setIsConnected] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Connect to your Socket.io backend
-    // Replace with your actual backend URL
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001", {
-      transports: ["websocket"],
-    })
+    const socket = io(
+      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001",
+      {
+        transports: ["websocket"],
+      }
+    );
 
-    socketRef.current = socket
+    socketRef.current = socket;
 
     socket.on("connect", () => {
-      console.log("[v0] Socket connected")
-      setIsConnected(true)
-    })
+      console.log("[v0] Socket connected");
+      setIsConnected(true);
+    });
 
     socket.on("disconnect", () => {
-      console.log("[v0] Socket disconnected")
-      setIsConnected(false)
-    })
+      console.log("[v0] Socket disconnected");
+      setIsConnected(false);
+    });
 
-    socket.on("ai-response", (data: { content: string }) => {
-      console.log("[v0] Received AI response:", data)
+    socket.on("response", (data: { text: string }) => {
+      console.log("[v0] Received AI response:", data);
       const newMessage: Message = {
         id: Date.now().toString(),
         role: "assistant",
-        content: data.content,
+        text: data.text,
         timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, newMessage])
-    })
+      };
+      setMessages((prev) => [...prev, newMessage]);
+    });
 
     return () => {
-      socket.disconnect()
-    }
-  }, [])
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim() || !socketRef.current) return
+    e.preventDefault();
+    if (!input.trim() || !socketRef.current) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input,
+      text: input,
       timestamp: new Date(),
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage]);
 
     // Send message to backend via Socket.io
-    socketRef.current.emit("user-message", { content: input })
+    socketRef.current.emit("message", { message: input });
 
-    setInput("")
-  }
+    setInput("");
+  };
 
   const toggleTheme = () => {
-    setIsDark(!isDark)
-    document.documentElement.classList.toggle("dark")
-  }
+    setIsDark(!isDark);
+    document.documentElement.classList.toggle("dark");
+  };
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
@@ -98,11 +99,24 @@ export default function MentalHealthChat() {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Mental Health Support</h1>
-            <p className="text-sm text-muted-foreground">{isConnected ? "Connected" : "Connecting..."}</p>
+            <h1 className="text-xl font-semibold text-foreground">
+              Mental Health Support
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {isConnected ? "Connected" : "Connecting..."}
+            </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
-            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="rounded-full"
+          >
+            {isDark ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
           </Button>
         </div>
 
@@ -110,13 +124,20 @@ export default function MentalHealthChat() {
         <div className="flex-1 overflow-y-auto px-6 py-6">
           <div className="space-y-6">
             {messages.map((message) => (
-              <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                key={message.id}
+                className={`flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
                 <div
                   className={`max-w-[80%] rounded-2xl px-5 py-3 ${
-                    message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground"
                   }`}
                 >
-                  <p className="leading-relaxed">{message.content}</p>
+                  <p className="leading-relaxed">{message.text}</p>
                 </div>
               </div>
             ))}
@@ -148,5 +169,5 @@ export default function MentalHealthChat() {
         </div>
       </div>
     </div>
-  )
+  );
 }
