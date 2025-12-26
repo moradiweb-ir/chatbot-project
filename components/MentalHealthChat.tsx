@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Send, Moon, Sun } from "lucide-react";
 import { io, type Socket } from "socket.io-client";
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -137,7 +138,7 @@ export default function MentalHealthChat() {
                       : "bg-muted text-foreground"
                   }`}
                 >
-                  <p className="leading-relaxed">{message.text}</p>
+                  <p className="leading-relaxed"><ReactMarkdown>{message.text}</ReactMarkdown></p>
                 </div>
               </div>
             ))}
