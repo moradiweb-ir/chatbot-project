@@ -107,7 +107,7 @@ export default function MentalHealthChat() {
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
-      <Toaster />
+      <Toaster richColors position="top-center" duration={2000} />
       <div className="flex h-full w-full max-w-3xl flex-col rounded-2xl border border-border bg-card shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
