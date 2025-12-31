@@ -4,7 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Therapeutic color palette for mental health support */
   --background: oklch(0.98 0.005 120); /* Soft warm off-white */
   --foreground: oklch(0.35 0.02 140); /* Deep sage text */
   --card: oklch(0.99 0.003 120);
@@ -28,7 +27,6 @@
 }
 
 .dark {
-  /* Dark mode with deep, calming tones */
   --background: oklch(0.18 0.015 140);
   --foreground: oklch(0.94 0.01 120);
   --card: oklch(0.2 0.018 140);
