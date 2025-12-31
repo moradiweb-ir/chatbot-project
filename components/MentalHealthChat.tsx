@@ -6,6 +6,8 @@ import { useState, useRef, useEffect } from "react";
 import { Send, Moon, Sun } from "lucide-react";
 import { io, type Socket } from "socket.io-client";
 import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/Loader";
@@ -66,6 +68,15 @@ export default function MentalHealthChat() {
       setMessages((prev) => [...prev, newMessage]);
     });
 
+    socket.on("error", (error: string | { message?: string }) => {
+      console.error("[v0] Socket error:", error);
+      const errorMessage =
+        typeof error === "string"
+          ? error
+          : error.message || "An error occurred";
+      toast.error(errorMessage);
+    });
+
     return () => {
       socket.disconnect();
     };
@@ -101,6 +112,7 @@ export default function MentalHealthChat() {
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background p-4">
+      <Toaster richColors position="top-center" duration={2000} />
       <div className="flex h-full w-full max-w-3xl flex-col rounded-2xl border border-border bg-card shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
