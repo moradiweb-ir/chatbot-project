@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Send, Moon, Sun } from "lucide-react";
 import { io, type Socket } from "socket.io-client";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   id: string;
@@ -27,6 +27,7 @@ export default function MentalHealthChat() {
   const [input, setInput] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
 
@@ -52,6 +53,7 @@ export default function MentalHealthChat() {
 
     socket.on("response", (data: { text: string }) => {
       console.log("[v0] Received AI response:", data);
+      setIsLoading(false);
       const newMessage: Message = {
         id: Date.now().toString(),
         role: "assistant",
@@ -68,7 +70,7 @@ export default function MentalHealthChat() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +86,7 @@ export default function MentalHealthChat() {
     setMessages((prev) => [...prev, userMessage]);
 
     // Send message to backend via Socket.io
+    setIsLoading(true);
     socketRef.current.emit("message", { message: input });
 
     setInput("");
@@ -138,10 +141,21 @@ export default function MentalHealthChat() {
                       : "bg-muted text-foreground"
                   }`}
                 >
-                  <p className="leading-relaxed"><ReactMarkdown>{message.text}</ReactMarkdown></p>
+                  <p className="leading-relaxed">
+                    <ReactMarkdown>{message.text}</ReactMarkdown>
+                  </p>
                 </div>
               </div>
             ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] rounded-2xl bg-muted px-5 py-3 text-foreground">
+                  <p className="leading-relaxed text-muted-foreground">
+                    Loading...
+                  </p>
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
         </div>
