@@ -149,21 +149,25 @@ export default function MentalHealthChat() {
                 }`}
               >
                 <div
+                  dir="auto"
                   className={`max-w-[80%] rounded-2xl px-5 py-3 ${
                     message.role === "user"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-foreground"
                   }`}
                 >
-                  <p className="leading-relaxed">
+                  <div className="leading-relaxed *:text-inherit">
                     <ReactMarkdown>{message.text}</ReactMarkdown>
-                  </p>
+                  </div>
                 </div>
               </div>
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="max-w-[80%] rounded-2xl bg-muted px-5 py-3">
+                <div
+                  dir="auto"
+                  className="max-w-[80%] rounded-2xl bg-muted px-5 py-3"
+                >
                   <Loader />
                 </div>
               </div>
@@ -180,6 +184,7 @@ export default function MentalHealthChat() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Share what's on your mind..."
+              dir="auto"
               className="flex-1 rounded-full border border-input bg-background px-6 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               disabled={!isConnected}
             />
