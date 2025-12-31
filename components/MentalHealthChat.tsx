@@ -3,10 +3,12 @@
 import type React from "react";
 
 import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Send, Moon, Sun } from "lucide-react";
 import { io, type Socket } from "socket.io-client";
 import ReactMarkdown from "react-markdown";
+
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/Loader";
 
 interface Message {
   id: string;
@@ -28,6 +30,7 @@ export default function MentalHealthChat() {
   const [isConnected, setIsConnected] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
 
@@ -85,7 +88,6 @@ export default function MentalHealthChat() {
 
     setMessages((prev) => [...prev, userMessage]);
 
-    // Send message to backend via Socket.io
     setIsLoading(true);
     socketRef.current.emit("message", { message: input });
 
@@ -149,10 +151,8 @@ export default function MentalHealthChat() {
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="max-w-[80%] rounded-2xl bg-muted px-5 py-3 text-foreground">
-                  <p className="leading-relaxed text-muted-foreground">
-                    Loading...
-                  </p>
+                <div className="max-w-[80%] rounded-2xl bg-muted px-5 py-3">
+                  <Loader />
                 </div>
               </div>
             )}
