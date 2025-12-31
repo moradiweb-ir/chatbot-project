@@ -8,7 +8,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Mental Health Support Chat",
   description: "A safe space to talk and get support",
-  generator: "v0.app",
   icons: {
     icon: [
       {
